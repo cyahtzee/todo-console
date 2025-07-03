@@ -36,8 +36,8 @@ func (t *Tab) GetStatus() bool {
 }
 
 func (t *Tab) Open() error {
-	fmt.Println(t.GetUI())
 	t.SetActive()
+	fmt.Println(t.GetUI())
 	return nil
 }
 

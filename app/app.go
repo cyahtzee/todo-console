@@ -31,17 +31,20 @@ func (a *App) Run() error {
 	a.Running = true
 
 	go a.handleTabMessages()
+	a.SetCurrentTab()
+
+	if a.router.Tab == nil {
+		return fmt.Errorf("no active tab found")
+	}
 
 	for a.Running {
 		a.PrintHeader()
-		a.router.Tab = a.GetCurrentTab()
+
 		if err := (*a.router.Tab).Open(); err != nil {
-			return err
+			fmt.Println("Error opening tab: ", err)
+			a.router.TabsChannel <- TabInput{TabName: "main", Ctx: ""}
 		}
 
-		if a.router.Tab == nil {
-			return fmt.Errorf("no active tab found")
-		}
 		a.wg.Add(1)
 		a.router.HandleInput()
 		a.wg.Wait()
@@ -85,18 +88,22 @@ func (a *App) GetCurrentTab() *TabInterface {
 }
 
 func (a *App) SwitchTab(msg TabInput) error {
+	fmt.Println("Switching to tab: ", msg.TabName)
 	for _, tab := range *a.UI {
 		tab.Close()
 	}
 
 	for _, tab := range *a.UI {
 		if tab.GetName() == msg.TabName {
+			tab.SetActive()
 			tab.SetCtx(msg.Ctx)
-			if err := tab.Open(); err != nil {
-				a.SwitchTab(TabInput{TabName: "main"})
-			}
+			a.router.Tab = &tab
 			break
 		}
 	}
 	return nil
+}
+
+func (a *App) SetCurrentTab() {
+	a.router.Tab = a.GetCurrentTab()
 }
