@@ -6,19 +6,43 @@ import (
 	"todo-console/app"
 )
 
-type Item interface {
-	NewTodo() *app.Todo
-	GetID() int
-	GetTitle() string
-	GetDescription() string
-	GetCompleted() bool
-}
-
 func main() {
 	todos := &[]app.Todo{}
-	consoleMenu := app.Menu{Running: true, Items: todos}
 
-	if err := consoleMenu.Run(); err != nil {
+	tabs := &[]app.TabInterface{
+		&app.MainTab{
+			Tab: app.Tab{
+				Active: true,
+				Name:   "main",
+				Items:  todos,
+			},
+		},
+		&app.ListTab{
+			Tab: app.Tab{
+				Active: false,
+				Name:   "list",
+				Items:  todos,
+			},
+		},
+		&app.AddTab{
+			Tab: app.Tab{
+				Active: false,
+				Name:   "add",
+				Items:  todos,
+			},
+		},
+		&app.ItemTab{
+			Tab: app.Tab{
+				Active: false,
+				Name:   "item",
+				Items:  todos,
+			},
+		},
+	}
+
+	appInstance := app.NewApp(todos, tabs)
+
+	if err := appInstance.Run(); err != nil {
 		fmt.Println("Error:", err)
 	}
 
