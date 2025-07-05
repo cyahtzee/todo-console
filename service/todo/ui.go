@@ -1,4 +1,4 @@
-package app
+package todo
 
 var tabs = map[string]string{
 	"main": `

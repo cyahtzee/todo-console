@@ -2,14 +2,23 @@ package app
 
 import (
 	"bufio"
+	"os"
 	"strings"
+	"todo-console/service/todo"
 )
 
 type Router struct {
 	Reader      *bufio.Reader
-	Tab         *TabInterface
-	PreviousTab *TabInterface
-	TabsChannel chan TabInput
+	Tab         *todo.TabInterface
+	PreviousTab *todo.TabInterface
+	TabsChannel chan todo.TabInput
+}
+
+func NewRouter() *Router {
+	return &Router{
+		Reader:      bufio.NewReader(os.Stdin),
+		TabsChannel: make(chan todo.TabInput, 10),
+	}
 }
 
 func (r *Router) HandleInput() error {

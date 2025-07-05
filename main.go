@@ -2,45 +2,47 @@ package main
 
 import (
 	"fmt"
-
 	"todo-console/app"
+	"todo-console/service/todo"
+	"todo-console/storage"
 )
 
 func main() {
-	todos := &[]app.Todo{}
+	storage := storage.NewStorage(&[]storage.Item{})
+	router := app.NewRouter()
 
-	tabs := &[]app.TabInterface{
-		&app.MainTab{
-			Tab: app.Tab{
-				Active: true,
-				Name:   "main",
-				Items:  todos,
+	tabs := &[]todo.TabInterface{
+		&todo.MainTab{
+			Tab: todo.Tab{
+				Active:  true,
+				Name:    "main",
+				Storage: storage,
 			},
 		},
-		&app.ListTab{
-			Tab: app.Tab{
-				Active: false,
-				Name:   "list",
-				Items:  todos,
+		&todo.ListTab{
+			Tab: todo.Tab{
+				Active:  false,
+				Name:    "list",
+				Storage: storage,
 			},
 		},
-		&app.AddTab{
-			Tab: app.Tab{
-				Active: false,
-				Name:   "add",
-				Items:  todos,
+		&todo.AddTab{
+			Tab: todo.Tab{
+				Active:  false,
+				Name:    "add",
+				Storage: storage,
 			},
 		},
-		&app.ItemTab{
-			Tab: app.Tab{
-				Active: false,
-				Name:   "item",
-				Items:  todos,
+		&todo.ItemTab{
+			Tab: todo.Tab{
+				Active:  false,
+				Name:    "item",
+				Storage: storage,
 			},
 		},
 	}
 
-	appInstance := app.NewApp(todos, tabs)
+	appInstance := app.NewApp(storage, tabs, router)
 
 	if err := appInstance.Run(); err != nil {
 		fmt.Println("Error:", err)

@@ -1,4 +1,4 @@
-package app
+package todo
 
 type EditTab struct {
 	Tab

@@ -1,4 +1,4 @@
-package app
+package todo
 
 import (
 	"fmt"
@@ -43,10 +43,10 @@ func (t *ItemTab) EditTodo(id string) {
 }
 
 func (t *ItemTab) RemoveTodo() {
-	for i, item := range *t.Items {
-		if item == *t.Ctx {
+	for _, item := range *t.Storage.FindAll() {
+		if item.GetID() == (*t.Ctx).GetID() {
 			fmt.Println("Removing todo: ", item.GetTitle())
-			*t.Items = append((*t.Items)[:i], (*t.Items)[i+1:]...)
+			t.Storage.Remove(item.GetID())
 			fmt.Println("Todo removed")
 			return
 		}
@@ -55,12 +55,11 @@ func (t *ItemTab) RemoveTodo() {
 }
 
 func (t *ItemTab) showToDo() error {
-	for _, item := range *t.Items {
-		if item == *t.Ctx {
-			fmt.Println(item.GetTitle())
-			return nil
-		}
+	item := t.Storage.Find((*t.Ctx).GetID())
+	if item == nil {
+		return fmt.Errorf("todo not found")
 	}
 
-	return fmt.Errorf("todo not found")
+	fmt.Println((*item).GetTitle())
+	return nil
 }

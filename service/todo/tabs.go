@@ -1,15 +1,16 @@
-package app
+package todo
 
 import (
 	"fmt"
+	"todo-console/storage"
 )
 
 type Tab struct {
-	Active bool
-	Name   string
-	Step   int
-	Ctx    *Todo
-	Items  *[]Todo
+	Active  bool
+	Name    string
+	Step    int
+	Ctx     *storage.Item
+	Storage *storage.Storage
 }
 
 type TabInterface interface {
@@ -20,8 +21,8 @@ type TabInterface interface {
 	Open() error
 	SetActive()
 	Close() error
-	GetCtx() *Todo
-	SetCtx(ctx *Todo)
+	GetCtx() *storage.Item
+	SetCtx(ctx *storage.Item)
 }
 
 func (t *Tab) GetUI() string {
@@ -51,11 +52,11 @@ func (t *Tab) Close() error {
 	return nil
 }
 
-func (t *Tab) GetCtx() *Todo {
+func (t *Tab) GetCtx() *storage.Item {
 	return t.Ctx
 }
 
-func (t *Tab) SetCtx(ctx *Todo) {
+func (t *Tab) SetCtx(ctx *storage.Item) {
 	t.Ctx = ctx
 }
 

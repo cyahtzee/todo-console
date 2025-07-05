@@ -1,29 +1,26 @@
 package app
 
 import (
-	"bufio"
 	"fmt"
-	"os"
 	"sync"
+	"todo-console/service/todo"
+	"todo-console/storage"
 )
 
 type App struct {
-	Running bool
-	Items   *[]Todo
-	UI      *[]TabInterface
-	wg      sync.WaitGroup
-	router  *Router
+	Running     bool
+	Storage     *storage.Storage
+	Controllers *[]todo.TabInterface
+	wg          sync.WaitGroup
+	router      *Router
 }
 
-func NewApp(items *[]Todo, ui *[]TabInterface) *App {
+func NewApp(storage *storage.Storage, controllers *[]todo.TabInterface, router *Router) *App {
 	return &App{
-		Running: true,
-		Items:   items,
-		UI:      ui,
-		router: &Router{
-			Reader:      bufio.NewReader(os.Stdin),
-			TabsChannel: make(chan TabInput, 10),
-		},
+		Running:     true,
+		Storage:     storage,
+		Controllers: controllers,
+		router:      router,
 	}
 }
 
@@ -76,12 +73,12 @@ func (a *App) Stop() error {
 	return nil
 }
 
-func (a *App) SwitchTab(msg TabInput) error {
-	for _, tab := range *a.UI {
+func (a *App) SwitchTab(msg todo.TabInput) error {
+	for _, tab := range *a.Controllers {
 		tab.Close()
 	}
 
-	for _, tab := range *a.UI {
+	for _, tab := range *a.Controllers {
 		if tab.GetName() == msg.TabName {
 			tab.SetActive()
 			tab.SetCtx(msg.Ctx)
@@ -92,8 +89,8 @@ func (a *App) SwitchTab(msg TabInput) error {
 	return nil
 }
 
-func (a *App) GetCurrentTab() *TabInterface {
-	for _, tab := range *a.UI {
+func (a *App) GetCurrentTab() *todo.TabInterface {
+	for _, tab := range *a.Controllers {
 		if tab.GetStatus() {
 			return &tab
 		}

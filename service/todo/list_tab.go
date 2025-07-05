@@ -1,8 +1,9 @@
-package app
+package todo
 
 import (
 	"fmt"
 	"strconv"
+	"todo-console/storage"
 )
 
 type ListTab struct {
@@ -11,7 +12,7 @@ type ListTab struct {
 
 func (t *ListTab) Open() error {
 	t.Tab.Open()
-	showAllTodos(t.Items)
+	showAllTodos(t.Storage.FindAll())
 	return nil
 }
 
@@ -25,8 +26,8 @@ func (t *ListTab) HandleInput(input string) TabInput {
 		return NewTabInput("list", t.Ctx)
 	}
 
-	if len(*t.Items) > 0 && v > 0 {
-		ctx = &(*t.Items)[v-1]
+	if len(*t.Storage.FindAll()) > 0 && v > 0 {
+		ctx = t.Storage.Find(v)
 	}
 
 	switch v {
@@ -39,15 +40,15 @@ func (t *ListTab) HandleInput(input string) TabInput {
 	return NewTabInput(tabName, ctx)
 }
 
-func showAllTodos(items *[]Todo) error {
+func showAllTodos(items *[]storage.Item) error {
 	if len(*items) == 0 {
 		fmt.Println("No todos found")
 		return nil
 	}
 
 	fmt.Println("Your todos:")
-	for i, item := range *items {
-		fmt.Printf("%d. %s\n", i+1, item.GetTitle())
+	for _, item := range *items {
+		fmt.Printf("%d. %s\n", item.GetID(), item.GetTitle())
 	}
 
 	return nil

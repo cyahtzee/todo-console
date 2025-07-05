@@ -1,4 +1,4 @@
-package app
+package todo
 
 import (
 	"fmt"
@@ -6,6 +6,12 @@ import (
 
 type AddTab struct {
 	Tab
+}
+
+var requiredFields = []string{
+	"title",
+	"description",
+	"completed",
 }
 
 func (t *AddTab) Open() error {
@@ -17,9 +23,9 @@ func (t *AddTab) Open() error {
 func (t *AddTab) HandleInput(input string) TabInput {
 	err := t.addNewTodo(input)
 	tabName := "list"
-	ctx := t.Ctx
+	ctx := *t.Ctx
 
-	if err != nil || !t.Ctx.Valid() {
+	if err != nil || !ctx.Validate(requiredFields) {
 		tabName = "add"
 	}
 
@@ -27,7 +33,7 @@ func (t *AddTab) HandleInput(input string) TabInput {
 		tabName = "main"
 	}
 
-	return NewTabInput(tabName, ctx)
+	return NewTabInput(tabName, &ctx)
 }
 
 func (t *AddTab) addNewTodo(input string) error {
@@ -37,10 +43,11 @@ func (t *AddTab) addNewTodo(input string) error {
 	}
 
 	field := t.GetProperty()
-	t.Ctx.SetField(field, input)
+	currentItem := *t.Ctx
+	currentItem.SetField(field, input)
 
-	if t.Ctx.Valid() {
-		*t.Items = append(*t.Items, *t.Ctx)
+	if currentItem.Validate(requiredFields) {
+		t.Storage.Create(currentItem)
 		t.Step = 0
 		fmt.Println("Todo added successfully")
 		return nil
