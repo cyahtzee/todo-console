@@ -3,59 +3,46 @@ package todo
 import (
 	"fmt"
 	"strconv"
+	"todo-console/types"
 )
 
 type ItemTab struct {
 	Tab
 }
 
-func (t *ItemTab) Open() error {
-	if err := t.showToDo(); err != nil {
+func (t *ItemTab) Open(c *types.RouterContext) error {
+	if err := t.showItem(c.Item.GetID()); err != nil {
 		return err
 	}
-	t.Tab.Open()
+	t.Tab.Open(c)
 	return nil
 }
 
-func (t *ItemTab) HandleInput(input string) TabInput {
-	tabName := ""
-	ctx := t.Ctx
-	v, _ := strconv.Atoi(input)
+func (t *ItemTab) HandleInput(c *types.RouterContext) *types.RouterContext {
+	v, _ := strconv.Atoi(c.Input)
 
 	switch v {
 	case 0:
-		tabName = "list"
+		c.TabName = "list"
 	case 1:
 		// t.EditTodo()
-		tabName = "list"
+		c.TabName = "list"
 	case 2:
-		t.RemoveTodo()
-		tabName = "list"
+		t.Storage.Remove(c.Item.GetID())
+		c.TabName = "list"
 	default:
 		fmt.Println("Invalid option. Please try again.")
 	}
 
-	return NewTabInput(tabName, ctx)
+	return c
 }
 
 func (t *ItemTab) EditTodo(id string) {
 	fmt.Println("Edit todo")
 }
 
-func (t *ItemTab) RemoveTodo() {
-	for _, item := range *t.Storage.FindAll() {
-		if item.GetID() == (*t.Ctx).GetID() {
-			fmt.Println("Removing todo: ", item.GetTitle())
-			t.Storage.Remove(item.GetID())
-			fmt.Println("Todo removed")
-			return
-		}
-	}
-	fmt.Println("Todo not found")
-}
-
-func (t *ItemTab) showToDo() error {
-	item := t.Storage.Find((*t.Ctx).GetID())
+func (t *ItemTab) showItem(id int) error {
+	item := t.Storage.Find(id)
 	if item == nil {
 		return fmt.Errorf("todo not found")
 	}

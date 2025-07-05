@@ -5,44 +5,47 @@ import (
 	"todo-console/app"
 	"todo-console/service/todo"
 	"todo-console/storage"
+	"todo-console/types"
 )
 
 func main() {
-	storage := storage.NewStorage(&[]storage.Item{})
-	router := app.NewRouter()
+	store := storage.NewStorage(&[]storage.Item{})
+	routerCtx := types.NewRouterContext("main", &storage.Todo{})
+	router := app.NewRouter(routerCtx)
 
-	tabs := &[]todo.TabInterface{
-		&todo.MainTab{
-			Tab: todo.Tab{
-				Active:  true,
-				Name:    "main",
-				Storage: storage,
-			},
+	// Create concrete tab instances
+	mainTab := &todo.MainTab{
+		Tab: todo.Tab{
+			Active:  true,
+			Name:    "main",
+			Storage: store,
 		},
-		&todo.ListTab{
-			Tab: todo.Tab{
-				Active:  false,
-				Name:    "list",
-				Storage: storage,
-			},
+	}
+	listTab := &todo.ListTab{
+		Tab: todo.Tab{
+			Active:  false,
+			Name:    "list",
+			Storage: store,
 		},
-		&todo.AddTab{
-			Tab: todo.Tab{
-				Active:  false,
-				Name:    "add",
-				Storage: storage,
-			},
+	}
+	addTab := &todo.AddTab{
+		Tab: todo.Tab{
+			Active:  false,
+			Name:    "add",
+			Storage: store,
 		},
-		&todo.ItemTab{
-			Tab: todo.Tab{
-				Active:  false,
-				Name:    "item",
-				Storage: storage,
-			},
+	}
+	itemTab := &todo.ItemTab{
+		Tab: todo.Tab{
+			Active:  false,
+			Name:    "item",
+			Storage: store,
 		},
 	}
 
-	appInstance := app.NewApp(storage, tabs, router)
+	tabs := &[]todo.TabInterface{mainTab, listTab, addTab, itemTab}
+
+	appInstance := app.NewApp(store, router, tabs)
 
 	if err := appInstance.Run(); err != nil {
 		fmt.Println("Error:", err)

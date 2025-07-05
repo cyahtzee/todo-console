@@ -2,6 +2,7 @@ package todo
 
 import (
 	"fmt"
+	"todo-console/types"
 )
 
 type AddTab struct {
@@ -14,37 +15,37 @@ var requiredFields = []string{
 	"completed",
 }
 
-func (t *AddTab) Open() error {
-	t.Tab.Open()
+func (t *AddTab) Open(c *types.RouterContext) error {
+	t.Tab.Open(c)
 	fmt.Println("Enter the " + t.GetProperty() + ": ")
 	return nil
 }
 
-func (t *AddTab) HandleInput(input string) TabInput {
-	err := t.addNewTodo(input)
-	tabName := "list"
-	ctx := *t.Ctx
+func (t *AddTab) HandleInput(c *types.RouterContext) *types.RouterContext {
+	input := c.Input
+	err := t.addNewTodo(c)
+	c.TabName = "list"
 
-	if err != nil || !ctx.Validate(requiredFields) {
-		tabName = "add"
+	if err != nil || !c.Item.Validate(requiredFields) {
+		c.TabName = "add"
 	}
 
 	if input == "0" {
-		tabName = "main"
+		c.TabName = "main"
 	}
 
-	return NewTabInput(tabName, &ctx)
+	return c
 }
 
-func (t *AddTab) addNewTodo(input string) error {
-	if input == "" {
+func (t *AddTab) addNewTodo(c *types.RouterContext) error {
+	if c.Input == "" {
 		fmt.Println("Todo is empty")
 		return fmt.Errorf("todo is empty")
 	}
 
 	field := t.GetProperty()
-	currentItem := *t.Ctx
-	currentItem.SetField(field, input)
+	currentItem := c.Item
+	currentItem.SetField(field, c.Input)
 
 	if currentItem.Validate(requiredFields) {
 		t.Storage.Create(currentItem)

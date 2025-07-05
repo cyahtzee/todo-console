@@ -4,40 +4,39 @@ import (
 	"fmt"
 	"strconv"
 	"todo-console/storage"
+	"todo-console/types"
 )
 
 type ListTab struct {
 	Tab
 }
 
-func (t *ListTab) Open() error {
-	t.Tab.Open()
+func (t *ListTab) Open(c *types.RouterContext) error {
+	t.Tab.Open(c)
 	showAllTodos(t.Storage.FindAll())
 	return nil
 }
 
-func (t *ListTab) HandleInput(input string) TabInput {
-	tabName := ""
-	ctx := t.Ctx
-	v, err := strconv.Atoi(input)
+func (t *ListTab) HandleInput(c *types.RouterContext) *types.RouterContext {
+	v, err := strconv.Atoi(c.Input)
 
 	if err != nil {
 		fmt.Println("Invalid option. Please try again.")
-		return NewTabInput("list", t.Ctx)
+		return types.NewRouterContext("list", c.Item)
 	}
 
 	if len(*t.Storage.FindAll()) > 0 && v > 0 {
-		ctx = t.Storage.Find(v)
+		c.Item = *t.Storage.Find(v)
 	}
 
 	switch v {
 	case 0:
-		tabName = "main"
+		c.TabName = "main"
 	default:
-		tabName = "item"
+		c.TabName = "item"
 	}
 
-	return NewTabInput(tabName, ctx)
+	return c
 }
 
 func showAllTodos(items *[]storage.Item) error {

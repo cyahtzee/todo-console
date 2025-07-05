@@ -5,19 +5,22 @@ import (
 	"os"
 	"strings"
 	"todo-console/service/todo"
+	"todo-console/types"
 )
 
 type Router struct {
 	Reader      *bufio.Reader
 	Tab         *todo.TabInterface
 	PreviousTab *todo.TabInterface
-	TabsChannel chan todo.TabInput
+	TabsChannel chan string
+	Ctx         *types.RouterContext
 }
 
-func NewRouter() *Router {
+func NewRouter(ctx *types.RouterContext) *Router {
 	return &Router{
 		Reader:      bufio.NewReader(os.Stdin),
-		TabsChannel: make(chan todo.TabInput, 10),
+		TabsChannel: make(chan string, 10),
+		Ctx:         ctx,
 	}
 }
 
@@ -26,10 +29,14 @@ func (r *Router) HandleInput() error {
 	if err != nil {
 		return err
 	}
-	input = strings.TrimSpace(input)
+	r.Ctx.Input = strings.TrimSpace(input)
+	ctx := (*r.Tab).HandleInput(r.Ctx)
+	r.SetCtx(ctx)
 
-	msg := (*r.Tab).HandleInput(input)
-
-	r.TabsChannel <- msg
+	r.TabsChannel <- ctx.TabName
 	return nil
+}
+
+func (r *Router) SetCtx(ctx *types.RouterContext) {
+	r.Ctx = ctx
 }

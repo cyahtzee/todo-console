@@ -3,27 +3,27 @@ package todo
 import (
 	"fmt"
 	"strconv"
+	"todo-console/types"
 )
 
 type MainTab struct {
 	Tab
 }
 
-func (t *MainTab) HandleInput(input string) TabInput {
-	tabName := ""
-	v, _ := strconv.Atoi(input)
+func (t *MainTab) HandleInput(c *types.RouterContext) *types.RouterContext {
+	v, _ := strconv.Atoi(c.Input)
 
 	switch v {
 	case 1:
-		tabName = "list"
+		c.TabName = "list"
 	case 2:
-		tabName = "add"
+		c.TabName = "add"
 	case 3:
-		tabName = "exit"
+		c.TabName = "exit"
 	default:
 		fmt.Println("Invalid option. Please try again.")
-		tabName = "main"
+		c.TabName = "main"
 	}
 
-	return NewTabInput(tabName, nil)
+	return c
 }

@@ -3,26 +3,24 @@ package todo
 import (
 	"fmt"
 	"todo-console/storage"
+	"todo-console/types"
 )
 
 type Tab struct {
 	Active  bool
 	Name    string
 	Step    int
-	Ctx     *storage.Item
 	Storage *storage.Storage
 }
 
 type TabInterface interface {
-	HandleInput(input string) TabInput
+	HandleInput(c *types.RouterContext) *types.RouterContext
+	Open(c *types.RouterContext) error
 	GetUI() string
 	GetName() string
 	GetStatus() bool
-	Open() error
 	SetActive()
 	Close() error
-	GetCtx() *storage.Item
-	SetCtx(ctx *storage.Item)
 }
 
 func (t *Tab) GetUI() string {
@@ -37,7 +35,7 @@ func (t *Tab) GetStatus() bool {
 	return t.Active
 }
 
-func (t *Tab) Open() error {
+func (t *Tab) Open(c *types.RouterContext) error {
 	t.SetActive()
 	fmt.Println(t.GetUI())
 	return nil
@@ -50,14 +48,6 @@ func (t *Tab) SetActive() {
 func (t *Tab) Close() error {
 	t.Active = false
 	return nil
-}
-
-func (t *Tab) GetCtx() *storage.Item {
-	return t.Ctx
-}
-
-func (t *Tab) SetCtx(ctx *storage.Item) {
-	t.Ctx = ctx
 }
 
 func (t *Tab) GetProperty() string {
