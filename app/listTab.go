@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"strconv"
 )
 
 type ListTab struct {
@@ -14,19 +15,28 @@ func (t *ListTab) Open() error {
 	return nil
 }
 
-func (t *ListTab) HandleInput(input string) (string, string) {
+func (t *ListTab) HandleInput(input string) TabInput {
 	tabName := ""
-	ctx := ""
+	ctx := t.Ctx
+	v, err := strconv.Atoi(input)
 
-	switch input {
-	case "0":
+	if err != nil {
+		fmt.Println("Invalid option. Please try again.")
+		return NewTabInput("list", t.Ctx)
+	}
+
+	if len(*t.Items) > 0 && v > 0 {
+		ctx = &(*t.Items)[v-1]
+	}
+
+	switch v {
+	case 0:
 		tabName = "main"
 	default:
 		tabName = "item"
-		ctx = input
 	}
 
-	return tabName, ctx
+	return NewTabInput(tabName, ctx)
 }
 
 func showAllTodos(items *[]Todo) error {

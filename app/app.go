@@ -38,11 +38,13 @@ func (a *App) Run() error {
 	}
 
 	for a.Running {
-		a.PrintHeader()
+		fmt.Println("Welcome to the Todo Console")
 
 		if err := (*a.router.Tab).Open(); err != nil {
 			fmt.Println("Error opening tab: ", err)
-			a.router.TabsChannel <- TabInput{TabName: "main", Ctx: ""}
+			fmt.Println("Fallback to previous tab: ", (*a.router.PreviousTab).GetName())
+			a.router.Tab = a.router.PreviousTab
+			continue
 		}
 
 		a.wg.Add(1)
@@ -74,21 +76,7 @@ func (a *App) Stop() error {
 	return nil
 }
 
-func (a *App) PrintHeader() {
-	fmt.Println("Welcome to the Todo Console")
-}
-
-func (a *App) GetCurrentTab() *TabInterface {
-	for _, tab := range *a.UI {
-		if tab.GetStatus() {
-			return &tab
-		}
-	}
-	return nil
-}
-
 func (a *App) SwitchTab(msg TabInput) error {
-	fmt.Println("Switching to tab: ", msg.TabName)
 	for _, tab := range *a.UI {
 		tab.Close()
 	}
@@ -99,6 +87,15 @@ func (a *App) SwitchTab(msg TabInput) error {
 			tab.SetCtx(msg.Ctx)
 			a.router.Tab = &tab
 			break
+		}
+	}
+	return nil
+}
+
+func (a *App) GetCurrentTab() *TabInterface {
+	for _, tab := range *a.UI {
+		if tab.GetStatus() {
+			return &tab
 		}
 	}
 	return nil

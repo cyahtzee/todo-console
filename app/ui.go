@@ -15,7 +15,6 @@ var tabs = map[string]string{
 	"add": `
 		0. Back to main menu
 		--------------------------------
-		Enter the new todo:
 		`,
 	"item": `
 		Select an option:
@@ -23,5 +22,10 @@ var tabs = map[string]string{
 		--------------------------------
 		1. Edit a todo
 		2. Remove a todo
+		`,
+	"edit": `
+		Select an option:
+		0. Back to main menu
+		--------------------------------
 		`,
 }

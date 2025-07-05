@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"strconv"
 )
 
 type ItemTab struct {
@@ -9,31 +10,32 @@ type ItemTab struct {
 }
 
 func (t *ItemTab) Open() error {
-	t.Tab.Open()
 	if err := t.showToDo(); err != nil {
 		return err
 	}
+	t.Tab.Open()
 	return nil
 }
 
-func (t *ItemTab) HandleInput(input string) (string, string) {
+func (t *ItemTab) HandleInput(input string) TabInput {
 	tabName := ""
-	ctx := ""
+	ctx := t.Ctx
+	v, _ := strconv.Atoi(input)
 
-	switch input {
-	case "0":
+	switch v {
+	case 0:
 		tabName = "list"
-	case "1":
+	case 1:
 		// t.EditTodo()
 		tabName = "list"
-	case "2":
+	case 2:
 		t.RemoveTodo()
 		tabName = "list"
 	default:
 		fmt.Println("Invalid option. Please try again.")
 	}
 
-	return tabName, ctx
+	return NewTabInput(tabName, ctx)
 }
 
 func (t *ItemTab) EditTodo(id string) {
@@ -42,9 +44,7 @@ func (t *ItemTab) EditTodo(id string) {
 
 func (t *ItemTab) RemoveTodo() {
 	for i, item := range *t.Items {
-		fmt.Println("Checking todo: ", item.GetID())
-		fmt.Println("Checking input: ", t.Ctx)
-		if fmt.Sprintf("%d", item.GetID()) == t.Ctx {
+		if item == *t.Ctx {
 			fmt.Println("Removing todo: ", item.GetTitle())
 			*t.Items = append((*t.Items)[:i], (*t.Items)[i+1:]...)
 			fmt.Println("Todo removed")
@@ -56,10 +56,7 @@ func (t *ItemTab) RemoveTodo() {
 
 func (t *ItemTab) showToDo() error {
 	for _, item := range *t.Items {
-		fmt.Println("Checking todo: ", fmt.Sprintf("%d", item.GetID()))
-		fmt.Println("Checking input: ", t.GetCtx())
-		fmt.Println("Checking if input is a number: ", t.GetCtx() == fmt.Sprintf("%d", item.GetID()))
-		if fmt.Sprintf("%d", item.GetID()) == t.GetCtx() {
+		if item == *t.Ctx {
 			fmt.Println(item.GetTitle())
 			return nil
 		}

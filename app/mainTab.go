@@ -2,27 +2,28 @@ package app
 
 import (
 	"fmt"
+	"strconv"
 )
 
 type MainTab struct {
 	Tab
 }
 
-func (t *MainTab) HandleInput(input string) (string, string) {
+func (t *MainTab) HandleInput(input string) TabInput {
 	tabName := ""
-	ctx := ""
+	v, _ := strconv.Atoi(input)
 
-	switch input {
-	case "1":
+	switch v {
+	case 1:
 		tabName = "list"
-	case "2":
+	case 2:
 		tabName = "add"
-	case "3":
+	case 3:
 		tabName = "exit"
 	default:
 		fmt.Println("Invalid option. Please try again.")
 		tabName = "main"
 	}
 
-	return tabName, ctx
+	return NewTabInput(tabName, nil)
 }

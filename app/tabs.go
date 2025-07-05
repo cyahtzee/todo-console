@@ -7,20 +7,21 @@ import (
 type Tab struct {
 	Active bool
 	Name   string
-	Ctx    string
+	Step   int
+	Ctx    *Todo
 	Items  *[]Todo
 }
 
 type TabInterface interface {
-	HandleInput(input string) (string, string)
+	HandleInput(input string) TabInput
 	GetUI() string
 	GetName() string
 	GetStatus() bool
 	Open() error
 	SetActive()
 	Close() error
-	GetCtx() string
-	SetCtx(ctx string)
+	GetCtx() *Todo
+	SetCtx(ctx *Todo)
 }
 
 func (t *Tab) GetUI() string {
@@ -50,10 +51,18 @@ func (t *Tab) Close() error {
 	return nil
 }
 
-func (t *Tab) GetCtx() string {
+func (t *Tab) GetCtx() *Todo {
 	return t.Ctx
 }
 
-func (t *Tab) SetCtx(ctx string) {
+func (t *Tab) SetCtx(ctx *Todo) {
 	t.Ctx = ctx
+}
+
+func (t *Tab) GetProperty() string {
+	return requiredFields[t.Step]
+}
+
+func (t *Tab) NextStep() {
+	t.Step++
 }

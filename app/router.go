@@ -19,11 +19,8 @@ func (r *Router) HandleInput() error {
 	}
 	input = strings.TrimSpace(input)
 
-	tabName, ctx := (*r.Tab).HandleInput(input)
+	msg := (*r.Tab).HandleInput(input)
 
-	r.TabsChannel <- TabInput{
-		TabName: tabName,
-		Ctx:     ctx,
-	}
+	r.TabsChannel <- msg
 	return nil
 }
