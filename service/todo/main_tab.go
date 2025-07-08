@@ -3,6 +3,7 @@ package todo
 import (
 	"fmt"
 	"strconv"
+	"todo-console/constants"
 	"todo-console/types"
 )
 
@@ -15,14 +16,14 @@ func (t *MainTab) HandleInput(c *types.RouterContext) *types.RouterContext {
 
 	switch v {
 	case 1:
-		c.TabName = "list"
+		c.TabName = constants.TabList
 	case 2:
-		c.TabName = "add"
+		c.TabName = constants.TabAdd
 	case 3:
-		c.TabName = "exit"
+		c.TabName = constants.TabExit
 	default:
 		fmt.Println("Invalid option. Please try again.")
-		c.TabName = "main"
+		c.TabName = constants.TabMain
 	}
 
 	return c

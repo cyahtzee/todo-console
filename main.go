@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"todo-console/app"
+	"todo-console/constants"
 	"todo-console/service/todo"
 	"todo-console/storage"
 	"todo-console/types"
@@ -10,35 +11,35 @@ import (
 
 func main() {
 	store := storage.NewStorage(&[]storage.Item{})
-	routerCtx := types.NewRouterContext("main", &storage.Todo{})
+	routerCtx := types.NewRouterContext("main", storage.NewTodo(0, "", ""))
 	router := app.NewRouter(routerCtx)
 
 	// Create concrete tab instances
 	mainTab := &todo.MainTab{
 		Tab: todo.Tab{
 			Active:  true,
-			Name:    "main",
+			Name:    constants.TabMain,
 			Storage: store,
 		},
 	}
 	listTab := &todo.ListTab{
 		Tab: todo.Tab{
 			Active:  false,
-			Name:    "list",
+			Name:    constants.TabList,
 			Storage: store,
 		},
 	}
 	addTab := &todo.AddTab{
 		Tab: todo.Tab{
 			Active:  false,
-			Name:    "add",
+			Name:    constants.TabAdd,
 			Storage: store,
 		},
 	}
 	itemTab := &todo.ItemTab{
 		Tab: todo.Tab{
 			Active:  false,
-			Name:    "item",
+			Name:    constants.TabItem,
 			Storage: store,
 		},
 	}

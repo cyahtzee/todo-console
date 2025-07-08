@@ -1,14 +1,19 @@
 package storage
 
+import (
+	"fmt"
+	"todo-console/constants"
+)
+
 type Todo struct {
 	ID          int
 	Title       string
 	Description string
-	Completed   string
+	Completed   constants.Status
 }
 
-func NewTodo(id int, title string, description string, completed string) *Todo {
-	return &Todo{ID: id, Title: title, Description: description, Completed: completed}
+func NewTodo(id int, title string, description string) *Todo {
+	return &Todo{ID: id, Title: title, Description: description, Completed: constants.PENDING}
 }
 
 func (t *Todo) GetID() int {
@@ -27,15 +32,23 @@ func (t *Todo) GetDescription() string {
 	return t.Description
 }
 
-func (t *Todo) SetField(field string, value string) {
+func (t *Todo) GetStatus() string {
+	return t.Completed.String()
+}
+
+func (t *Todo) SetField(field string, value string) error {
 	switch field {
 	case "title":
 		t.Title = value
 	case "description":
 		t.Description = value
 	case "completed":
-		t.Completed = value
+		if !constants.Status(value).Validate() {
+			return fmt.Errorf("invalid completed value: %s", value)
+		}
+		t.Completed = constants.Status(value)
 	}
+	return nil
 }
 
 func (t *Todo) GetField(field string) string {
@@ -46,7 +59,7 @@ func (t *Todo) GetField(field string) string {
 	case "description":
 		fieldValue = t.Description
 	case "completed":
-		fieldValue = t.Completed
+		fieldValue = t.Completed.String()
 	}
 	return fieldValue
 }

@@ -9,7 +9,8 @@ type Item interface {
 	SetID(id int)
 	GetTitle() string
 	GetDescription() string
-	SetField(field string, value string)
+	GetStatus() string
+	SetField(field string, value string) error
 	GetField(field string) string
 	Validate(fields []string) bool
 }

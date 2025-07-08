@@ -2,6 +2,8 @@ package todo
 
 import (
 	"fmt"
+	"todo-console/constants"
+	"todo-console/storage"
 	"todo-console/types"
 )
 
@@ -24,14 +26,20 @@ func (t *AddTab) Open(c *types.RouterContext) error {
 func (t *AddTab) HandleInput(c *types.RouterContext) *types.RouterContext {
 	input := c.Input
 	err := t.addNewTodo(c)
-	c.TabName = "list"
 
-	if err != nil || !c.Item.Validate(requiredFields) {
-		c.TabName = "add"
+	if c.Item.Validate(requiredFields) {
+		t.Step = 0
+		c.TabName = constants.TabList
+		c.Item = storage.NewTodo(0, "", "")
+		return c
+	}
+
+	if err != nil {
+		c.TabName = constants.TabAdd
 	}
 
 	if input == "0" {
-		c.TabName = "main"
+		c.TabName = constants.TabMain
 	}
 
 	return c
@@ -45,11 +53,15 @@ func (t *AddTab) addNewTodo(c *types.RouterContext) error {
 
 	field := t.GetProperty()
 	currentItem := c.Item
-	currentItem.SetField(field, c.Input)
+	err := currentItem.SetField(field, c.Input)
+
+	if err != nil {
+		fmt.Println("Error setting field: ", err)
+		return err
+	}
 
 	if currentItem.Validate(requiredFields) {
 		t.Storage.Create(currentItem)
-		t.Step = 0
 		fmt.Println("Todo added successfully")
 		return nil
 	}

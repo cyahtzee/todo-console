@@ -3,6 +3,7 @@ package todo
 import (
 	"fmt"
 	"strconv"
+	"todo-console/constants"
 	"todo-console/storage"
 	"todo-console/types"
 )
@@ -31,9 +32,9 @@ func (t *ListTab) HandleInput(c *types.RouterContext) *types.RouterContext {
 
 	switch v {
 	case 0:
-		c.TabName = "main"
+		c.TabName = constants.TabMain
 	default:
-		c.TabName = "item"
+		c.TabName = constants.TabItem
 	}
 
 	return c
@@ -46,8 +47,14 @@ func showAllTodos(items *[]storage.Item) error {
 	}
 
 	fmt.Println("Your todos:")
-	for _, item := range *items {
-		fmt.Printf("%d. %s\n", item.GetID(), item.GetTitle())
+	for i, item := range *items {
+		fmt.Printf(
+			"%d. %s - %s - %s\n",
+			i+1,
+			item.GetTitle(),
+			item.GetDescription(),
+			item.GetStatus(),
+		)
 	}
 
 	return nil

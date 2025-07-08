@@ -3,6 +3,7 @@ package app
 import (
 	"fmt"
 	"sync"
+	"todo-console/constants"
 	"todo-console/service/todo"
 	"todo-console/storage"
 )
@@ -58,7 +59,7 @@ func (a *App) handleTabMessages() {
 	for a.Running {
 		msg := <-a.Router.TabsChannel
 		switch msg {
-		case "exit":
+		case constants.TabExit:
 			a.Stop()
 		default:
 			a.Router.PreviousTab = a.Router.Tab

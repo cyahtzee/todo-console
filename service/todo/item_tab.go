@@ -3,6 +3,7 @@ package todo
 import (
 	"fmt"
 	"strconv"
+	"todo-console/constants"
 	"todo-console/types"
 )
 
@@ -23,13 +24,13 @@ func (t *ItemTab) HandleInput(c *types.RouterContext) *types.RouterContext {
 
 	switch v {
 	case 0:
-		c.TabName = "list"
+		c.TabName = constants.TabList
 	case 1:
 		// t.EditTodo()
-		c.TabName = "list"
+		c.TabName = constants.TabList
 	case 2:
 		t.Storage.Remove(c.Item.GetID())
-		c.TabName = "list"
+		c.TabName = constants.TabList
 	default:
 		fmt.Println("Invalid option. Please try again.")
 	}
@@ -48,5 +49,6 @@ func (t *ItemTab) showItem(id int) error {
 	}
 
 	fmt.Println((*item).GetTitle())
+
 	return nil
 }
