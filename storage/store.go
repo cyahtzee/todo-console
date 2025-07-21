@@ -16,7 +16,7 @@ type Item interface {
 }
 
 type Store interface {
-	Create(todo *Item)
+	Create(item Item)
 	Find(id int) *Item
 	Remove(id int)
 	FindAll() *[]Item

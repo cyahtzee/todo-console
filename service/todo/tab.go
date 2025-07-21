@@ -10,7 +10,7 @@ type Tab struct {
 	Active  bool
 	Name    string
 	Step    int
-	Storage *storage.Storage
+	Storage storage.Store
 }
 
 type TabInterface interface {

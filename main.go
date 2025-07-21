@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	store := storage.NewStorage(&[]storage.Item{})
+	store := storage.NewCSVStorage(constants.DEFAULT_CSV_FILE_PATH)
 	routerCtx := types.NewRouterContext("main", storage.NewTodo(0, "", ""))
 	router := app.NewRouter(routerCtx)
 

@@ -10,13 +10,13 @@ import (
 
 type App struct {
 	Running     bool
-	Storage     *storage.Storage
+	Storage     storage.Store
 	Controllers *[]todo.TabInterface
 	wg          sync.WaitGroup
 	Router      *Router
 }
 
-func NewApp(storage *storage.Storage, router *Router, controllers *[]todo.TabInterface) *App {
+func NewApp(storage storage.Store, router *Router, controllers *[]todo.TabInterface) *App {
 	return &App{
 		Running:     false,
 		Storage:     storage,
